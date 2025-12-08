@@ -58,7 +58,7 @@ def solve(input_string: str) -> int:
             distances.append((distance, (box1, box2)))
     distances.sort(key=lambda x: x[0])
 
-    # Find the 2 closest junction boxes in Euclidean distance, do it 10 times
+    # Find the 2 closest junction boxes in Euclidean distance, do it 1000 times
     for i in range(1000):
         closest_pair = distances[i][1]
 

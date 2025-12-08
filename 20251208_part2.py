@@ -58,7 +58,6 @@ def solve(input_string: str) -> int:
             distances.append((distance, (box1, box2)))
     distances.sort(key=lambda x: x[0])
 
-    # Find the 2 closest junction boxes in Euclidean distance, do it until all are in one circuit
     i = -1
     while True:
         i += 1
@@ -94,12 +93,7 @@ def solve(input_string: str) -> int:
         if len(circuits) == 1 and len(circuits[0]) == len(junction_boxes):
             break
 
-    count = 1
-    # find 3 longest circuits
-    circuits.sort(key=lambda c: len(c), reverse=True)
-    for circuit in circuits[:3]:
-        count *= len(circuit)
-
+    # return the product of the two junction boxes in the last pair added to make the full circuit
     return distances[i][1][0][0] * distances[i][1][1][0]
 
 
