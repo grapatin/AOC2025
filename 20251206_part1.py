@@ -12,12 +12,47 @@ def debug_print(*args, **kwargs):
         print(*args, **kwargs)
 
 
-example_input = """"""
-example1_result = 0
+example_input = """123 328  51 64 
+ 45 64  387 23 
+  6 98  215 314
+*   +   *   +  """
+example1_result = 4277556
 
 
 def solve(input_string: str) -> int:
-    pass
+    result = 0
+    # Parse input into a 2D list of integers and operators in the last row
+    lines = input_string.strip().splitlines()
+    grid = []
+    operators = []
+    for line in lines:
+        row = []
+        for item in line.split():
+            if item in {"*", "+"}:
+                operators.append(item)
+            else:
+                row.append(int(item))
+        grid.append(row)
+
+    number_of_tasks = len(operators)
+    number_numbers_per_task = len(grid) - 1  # Operators are in operators row
+    for task_index in range(number_of_tasks):
+        op = operators[task_index]
+        numbers_to_calculate = []
+        for number_index in range(number_numbers_per_task):
+            numbers_to_calculate.append(grid[number_index][task_index])
+
+        if op == "*":
+            task_result = 1
+            for num in numbers_to_calculate:
+                task_result *= num
+        elif op == "+":
+            task_result = sum(numbers_to_calculate)
+        else:
+            raise ValueError(f"Unknown operator: {op}")
+        print(f"Task {task_index + 1}: Operator {op}, Numbers {numbers_to_calculate} => Result {task_result}")
+        result += task_result
+    return result
 
 
 # Test the example
