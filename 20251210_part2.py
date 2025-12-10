@@ -15,10 +15,9 @@ def debug_print(*args, **kwargs):
 example_input = """[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
 [...#.] (0,2,3,4) (2,3) (0,4) (0,1,2) (1,2,3,4) {7,5,12,7,2}
 [.###.#] (0,1,2,3,4) (0,3,4) (0,1,2,4,5) (1,2) {10,11,11,5,10,5}"""
-example1_result = 7
+example1_result = 33
 
-max_depth = 10
-
+max_depth = 100
 min_depth = max_depth
 
 
@@ -32,6 +31,12 @@ def rec_solver(goal, current_state, visited_states, buttons, cache_dict, button_
     if current_state in cache_dict:
         if cache_dict[current_state] <= depth:
             debug_print("  " * depth + "Reached this state before with less or equal depth, backtracking.")
+            return 0
+
+    # if any of the states are higher than goal, backtrack
+    for i in range(len(current_state)):
+        if current_state[i] > goal[i]:
+            debug_print("  " * depth + "Current state exceeds goal state, backtracking.")
             return 0
 
     # Update cache with current depth (better or first time)
@@ -56,7 +61,7 @@ def rec_solver(goal, current_state, visited_states, buttons, cache_dict, button_
     for button in buttons:
         new_state = list(current_state)
         for index in map(int, button):
-            new_state[index] = 1 - new_state[index]  # Toggle the light
+            new_state[index] = new_state[index] + 1  # Add one to the state at this index
         new_state_tuple = tuple(new_state)
         debug_print("  " * depth + f"Pressing button {button} leads to new state: {new_state_tuple}")
         _ = rec_solver(goal, new_state_tuple, visited_states, buttons, cache_dict, button_pressed + [button], depth + 1)
@@ -73,26 +78,26 @@ def solve(input_string: str) -> int:
     for line in lines:
         cache_dict = {}
         parts = line.split(" ")
-        goal_lights = parts[0][1:-1]  # Extract the light pattern
+        _ = parts[0][1:-1]  # Extract the light pattern
+        goal_state = parts[-1][1:-1]  # Extract the goal state which is the last part
         parts = parts[1:-1]  # The rest of the parts except last part
-        debug_print("Lights:", goal_lights)
+        debug_print("Goal:", goal_state)
         button_list = []
         for part in parts:
             button_list.append(part[1:-1].split(","))  # Remove parentheses
 
         debug_print("Button List:", button_list)
 
-        # replace # with 1 and . with 0
-        goal_lights = goal_lights.replace("#", "1").replace(".", "0")
-        goal_state = tuple(int(c) for c in goal_lights)
+        # remove , from goal_state
+        goal_state = tuple(int(x) for x in goal_state.split(","))
         start_state = tuple(0 for _ in goal_state)
         visited_states = set()
+        print("Processing line: ", i)
         _ = rec_solver(goal_state, start_state, visited_states, button_list, cache_dict)
         global min_depth
         print("Result for line:", line, "is", min_depth)
         total += min_depth
         min_depth = max_depth  # Reset for next line
-        print("Processing line: ", i)
         i += 1
 
     return total
